@@ -1,8 +1,9 @@
 package com.kaelesty.cryptocurrencies_observer
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class USD {
+class USD: Serializable {
 
     @SerializedName("PRICE") var price: String? = null
     @SerializedName("LASTUPDATE") var lastUpdate: String? = null
