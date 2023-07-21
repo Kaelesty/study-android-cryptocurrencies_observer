@@ -11,8 +11,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 
 class CoinsListViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val UPDATE_TIME: Long = 10
+
     val TAG = "CoinsListViewModel"
-    private var page: Int = 0
+    private var limit: Int = 10
+
+    private var isLoadingData = false
 
     private val subscribes = CompositeDisposable()
     val coins = MutableLiveData<ArrayList<Coin>>()
@@ -21,19 +25,36 @@ class CoinsListViewModel(application: Application) : AndroidViewModel(applicatio
             return field
         }
 
-    fun loadData() {
-        val disposable = ApiFactory.apiService.loadCurrencies(page)
+    fun loadData(updateCurrent: Boolean = false) {
+        // if (isLoadingData) { return }
+        if (!updateCurrent) {
+            limit += 10
+            Log.d("Coin", "Update with increase")
+        }
+        else {
+            Log.d("Coin", "Update")
+        }
+        val disposable = ApiFactory.apiService.loadCurrencies(limit)
             .subscribeOn(Schedulers.io())
+            .doOnSubscribe { isLoadingData = true }
+            .doFinally { isLoadingData = false }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe( {
-                        val tempArray: ArrayList<Coin> = coins.value?:ArrayList()
-                        for (i in it.coins?:ArrayList()) {
-                            tempArray.add(i)
-                        }
-                        coins.value = tempArray
-            }, {})
+                coins.value = it.coins
+            }, {
+                Log.d("Coin", "Update falied")
+            })
         subscribes.add(disposable)
-        page++
+    }
+
+    fun update() {
+        val thread: Thread = Thread() {
+            while(true) {
+                Thread.sleep(1000 * UPDATE_TIME)
+                loadData(updateCurrent = true)
+            }
+        }
+        thread.start()
     }
 
     override fun onCleared() {

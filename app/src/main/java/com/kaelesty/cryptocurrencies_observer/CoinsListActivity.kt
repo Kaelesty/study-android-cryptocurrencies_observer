@@ -53,6 +53,7 @@ class CoinsListActivity : AppCompatActivity() {
                 adapter.coinPrices = it
             }
             loadData()
+            update()
         }
     }
 }

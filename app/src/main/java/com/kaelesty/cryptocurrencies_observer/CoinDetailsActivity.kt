@@ -28,8 +28,6 @@ class CoinDetailsActivity : AppCompatActivity() {
 
         val coin: Coin = intent.getSerializableExtra(COIN_EXTRA) as Coin
 
-        Log.d("Coin", coin.coinInfo?.name?:"ooops")
-
         with(binding) {
             Glide.with(this@CoinDetailsActivity)
                 .load("https://cryptocompare.com${coin.coinInfo?.imageUrl}")
