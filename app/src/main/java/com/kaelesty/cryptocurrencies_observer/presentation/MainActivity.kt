@@ -1,11 +1,8 @@
-package com.kaelesty.cryptocurrencies_observer
+package com.kaelesty.cryptocurrencies_observer.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import com.kaelesty.cryptocurrencies_observer.R
 
 
 class MainActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.kaelesty.cryptocurrencies_observer
+package com.kaelesty.cryptocurrencies_observer.data.internet.pojos
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

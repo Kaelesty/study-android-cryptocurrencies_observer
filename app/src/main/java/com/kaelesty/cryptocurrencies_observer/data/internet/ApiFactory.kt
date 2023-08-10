@@ -1,4 +1,4 @@
-package com.kaelesty.cryptocurrencies_observer
+package com.kaelesty.cryptocurrencies_observer.data.internet
 
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
@@ -13,5 +13,5 @@ object ApiFactory {
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .build()
-        .create<ApiService>(ApiService::class.java)
+        .create(ApiService::class.java)
 }

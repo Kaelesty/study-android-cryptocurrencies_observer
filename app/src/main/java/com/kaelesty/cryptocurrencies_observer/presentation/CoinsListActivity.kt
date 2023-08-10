@@ -1,16 +1,13 @@
-package com.kaelesty.cryptocurrencies_observer
+package com.kaelesty.cryptocurrencies_observer.presentation
 
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kaelesty.cryptocurrencies_observer.databinding.ActivityCoinsListBinding
-import com.kaelesty.cryptocurrencies_observer.databinding.CoinPriceBinding
 
 class CoinsListActivity : AppCompatActivity() {
 
@@ -50,7 +47,7 @@ class CoinsListActivity : AppCompatActivity() {
 
         with(viewModel) {
             coins.observe(this@CoinsListActivity) {
-                adapter.coinPrices = it
+                adapter.submitList(it)
             }
             loadData()
             update()
