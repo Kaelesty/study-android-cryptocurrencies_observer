@@ -2,53 +2,35 @@ package com.kaelesty.cryptocurrencies_observer.presentation
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.work.Constraints
-import androidx.work.NetworkType
+import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.Worker
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
-import androidx.work.workDataOf
-import com.kaelesty.cryptocurrencies_observer.data.database.CoinDatabase
-import com.kaelesty.cryptocurrencies_observer.data.internet.ApiFactory
+import com.kaelesty.cryptocurrencies_observer.data.CoinsRepository
+import com.kaelesty.cryptocurrencies_observer.domain.LoadDataUseCase
+import java.time.Duration
 
 class CoinUpdateWorker(
 	context: Context,
-	val application: Application,
-	private val workerParameters: WorkerParameters
-): Worker(context, workerParameters) {
+	application: Application,
+	workerParameters: WorkerParameters
+): CoroutineWorker(context, workerParameters) {
 
-	override fun doWork(): Result {
-		val limit = workerParameters.inputData.getInt(LIMIT_EXTRA_KEY, 0)
+	private val repo = CoinsRepository.getInstance(application)
+	private val loadDataUseCase = LoadDataUseCase(repo)
 
-		val dao = CoinDatabase.getInstance(application).dao()
-		val apiService = ApiFactory.apiService
-
-		while (true) {
-
-		}
-
+	override suspend fun doWork(): Result {
+		//loadDataUseCase.loadData()
+		Log.d("UPDATER", "Coins list updated")
 		return Result.success()
 	}
 
 	companion object {
 
-		const val WORK_NAME = "update coins"
-		private const val LIMIT_EXTRA_KEY = "limit"
-
-		fun makeRequest(limit: Int): OneTimeWorkRequest {
-			return OneTimeWorkRequestBuilder<CoinUpdateWorker>()
-				.setInputData(
-					workDataOf(LIMIT_EXTRA_KEY to limit)
-				)
-				.setConstraints(makeConstraints())
-				.build()
-		}
-
-		private fun makeConstraints(): Constraints {
-			return Constraints.Builder()
-				.setRequiredNetworkType(NetworkType.UNMETERED)
-				.build()
-		}
+		const val JOB_NAME = "update coins"
 	}
 }

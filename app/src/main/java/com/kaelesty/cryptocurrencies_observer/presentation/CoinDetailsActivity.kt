@@ -7,6 +7,7 @@ import android.os.Bundle
 import com.bumptech.glide.Glide
 import com.kaelesty.cryptocurrencies_observer.data.internet.pojos.CoinPojo
 import com.kaelesty.cryptocurrencies_observer.databinding.ActivityCoinDetailsBinding
+import com.kaelesty.cryptocurrencies_observer.domain.CoinView
 
 class CoinDetailsActivity : AppCompatActivity() {
 
@@ -14,7 +15,7 @@ class CoinDetailsActivity : AppCompatActivity() {
 
         private const val COIN_EXTRA = "Coin"
 
-        fun newIntent(context: Context, coin: CoinPojo): Intent {
+        fun newIntent(context: Context, coin: CoinView): Intent {
             val intent = Intent(context, CoinDetailsActivity::class.java)
             intent.putExtra(COIN_EXTRA, coin)
             return intent

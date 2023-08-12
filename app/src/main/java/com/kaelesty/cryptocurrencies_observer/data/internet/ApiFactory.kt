@@ -1,7 +1,6 @@
 package com.kaelesty.cryptocurrencies_observer.data.internet
 
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiFactory {
@@ -11,7 +10,6 @@ object ApiFactory {
     val apiService: ApiService = Retrofit.Builder()
         .baseUrl(URL)
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .build()
         .create(ApiService::class.java)
 }

@@ -5,4 +5,6 @@ import androidx.lifecycle.LiveData
 interface ICoinsRepository {
 
 	fun getCoinList(): LiveData<List<CoinView>>
+
+	suspend fun loadData()
 }

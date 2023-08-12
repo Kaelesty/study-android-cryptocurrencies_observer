@@ -7,6 +7,8 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkManager
 import com.kaelesty.cryptocurrencies_observer.databinding.ActivityCoinsListBinding
 
 class CoinsListActivity : AppCompatActivity() {
@@ -29,17 +31,20 @@ class CoinsListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this)[CoinsListViewModel::class.java]
         adapter = CoinPricesAdapter()
 
         recyclerView = binding.recyclerViewCoinPrices
 
-        viewModel = ViewModelProvider(this)[CoinsListViewModel::class.java]
+        viewModel = CoinListViewModelFactory(
+            application,
+            this@CoinsListActivity
+        ).create(CoinsListViewModel::class.java)
+
         adapter = CoinPricesAdapter()
 
         with(adapter) {
             onClickListener = { startActivity(CoinDetailsActivity.newIntent(this@CoinsListActivity, it)) }
-            onReachEndListener = { viewModel.loadData() }
+            onReachEndListener = { viewModel.increaseRepoLimit() }
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -50,7 +55,9 @@ class CoinsListActivity : AppCompatActivity() {
                 adapter.submitList(it)
             }
             loadData()
-            update()
+            update(applicationContext)
         }
+
+
     }
 }

@@ -10,7 +10,7 @@ object CoinMapper {
 		return list.map { coinModelToCoinView(it) }
 	}
 
-	private fun coinModelToCoinView(model: CoinDbModel): CoinView {
+	fun coinModelToCoinView(model: CoinDbModel): CoinView {
 		with(model) {
 			return CoinView(
 				"https://cryptocompare.com${imageUrl}",

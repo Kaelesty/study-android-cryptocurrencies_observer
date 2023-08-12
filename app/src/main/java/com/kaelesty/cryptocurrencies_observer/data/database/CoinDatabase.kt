@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.kaelesty.cryptocurrencies_observer.data.database.entities.CoinDbModel
 
-@Database(entities = [CoinDbModel::class], version = 1, exportSchema = false)
+@Database(entities = [CoinDbModel::class], version = 2, exportSchema = false)
 abstract class CoinDatabase: RoomDatabase() {
 
 	abstract fun dao(): CoinDao

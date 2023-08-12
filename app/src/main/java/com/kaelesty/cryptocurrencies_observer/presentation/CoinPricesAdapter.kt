@@ -24,6 +24,10 @@ class CoinPricesAdapter: ListAdapter<CoinView, CoinPricesAdapter.CoinViewHolder>
     var onClickListener: ((coinItem: CoinView) -> Unit)? = null
     var onReachEndListener: (() -> Unit)? = null
 
+    init {
+        stateRestorationPolicy = StateRestorationPolicy.ALLOW
+    }
+
 
     inner class CoinViewHolder(val binding: CoinPriceBinding) :
         ViewHolder(binding.root)
@@ -53,7 +57,7 @@ class CoinPricesAdapter: ListAdapter<CoinView, CoinPricesAdapter.CoinViewHolder>
                 it(coin)
             }
         }
-        if (position == currentList.size - 2) {
+        if (position == currentList.size - 4) {
             onReachEndListener?.let {
                 it()
             }
