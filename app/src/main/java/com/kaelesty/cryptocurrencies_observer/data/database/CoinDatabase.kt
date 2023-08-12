@@ -1,6 +1,7 @@
 package com.kaelesty.cryptocurrencies_observer.data.database
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -18,7 +19,7 @@ abstract class CoinDatabase: RoomDatabase() {
 
 		private val LOCK = Any()
 
-		fun getInstance(application: Application): CoinDatabase {
+		fun getInstance(context: Context): CoinDatabase {
 			instance?.let {
 				return it
 			}
@@ -27,7 +28,7 @@ abstract class CoinDatabase: RoomDatabase() {
 					return it
 				}
 				val db = Room.databaseBuilder(
-					application,
+					context,
 					CoinDatabase::class.java,
 					DB_NAME
 				).build()

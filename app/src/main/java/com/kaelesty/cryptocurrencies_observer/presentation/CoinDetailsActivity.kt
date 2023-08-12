@@ -2,12 +2,10 @@ package com.kaelesty.cryptocurrencies_observer.presentation
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.bumptech.glide.Glide
-import com.kaelesty.cryptocurrencies_observer.data.internet.pojos.CoinPojo
+import androidx.appcompat.app.AppCompatActivity
+import com.kaelesty.cryptocurrencies_observer.R
 import com.kaelesty.cryptocurrencies_observer.databinding.ActivityCoinDetailsBinding
-import com.kaelesty.cryptocurrencies_observer.domain.CoinView
 
 class CoinDetailsActivity : AppCompatActivity() {
 
@@ -15,9 +13,9 @@ class CoinDetailsActivity : AppCompatActivity() {
 
         private const val COIN_EXTRA = "Coin"
 
-        fun newIntent(context: Context, coin: CoinView): Intent {
+        fun newIntent(context: Context, coinName: String): Intent {
             val intent = Intent(context, CoinDetailsActivity::class.java)
-            intent.putExtra(COIN_EXTRA, coin)
+            intent.putExtra(COIN_EXTRA, coinName)
             return intent
         }
     }
@@ -27,18 +25,18 @@ class CoinDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val coin: CoinPojo = intent.getSerializableExtra(COIN_EXTRA) as CoinPojo
+        val coinName = intent.extras?.get(COIN_EXTRA) ?: throw RuntimeException("Cant find coin name")
 
-        with(binding) {
-            Glide.with(this@CoinDetailsActivity)
-                .load("https://cryptocompare.com${coin.coinInfo?.imageUrl}")
-                .into(imageViewCoinLogo)
-            textViewCoinName.text = coin.coinInfo?.name
-            textViewCoinPrice.text = coin.display?.usd?.price
-            textViewDayMin.text = coin.display?.usd?.lowestDayPrice
-            textViewDayMax.text = coin.display?.usd?.highestDayPrice
-            textViewLastTrade.text = coin.display?.usd?.lastMarket
-            textViewLastUpdate.text = coin.display?.usd?.lastUpdate
+        if (savedInstanceState == null) {
+            launchFragment(coinName as String)
         }
+    }
+
+    private fun launchFragment(coinName: String) {
+        val fragment = DetailsFragment.newInstance(coinName, true)
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
     }
 }

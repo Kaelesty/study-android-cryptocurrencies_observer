@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.kaelesty.cryptocurrencies_observer.data.CoinsRepository
@@ -26,13 +27,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-class CoinsListViewModel(application: Application, val owner: LifecycleOwner) : AndroidViewModel(application) {
+class CoinsListViewModel(application: Application, private val owner: LifecycleOwner) : AndroidViewModel(application) {
 
-    val scope = CoroutineScope(Dispatchers.IO)
+    private val workerScope = CoroutineScope(Dispatchers.IO)
 
     private val UPDATE_TIME: Long = 10000
-
-    private var limit: Int = 10
 
     private val _coins = MutableLiveData<List<CoinView>>()
     val coins: LiveData<List<CoinView>> get() = _coins
@@ -41,32 +40,43 @@ class CoinsListViewModel(application: Application, val owner: LifecycleOwner) : 
     private val getCoinListUseCase: GetCoinListUseCase = GetCoinListUseCase(repo)
     private val loadDataUseCase = LoadDataUseCase(repo)
 
+    private var limit = 0
 
-    fun loadData() {
+
+    fun subscribeToRepo() {
         getCoinListUseCase.getCoinList().observe(owner) {
             _coins.postValue(it)
         }
     }
 
-    fun increaseRepoLimit() {
-        repo.increaseLimit()
+    fun increaseLimit() {
+        workerScope.launch {
+            repo.increaseLimit()
+            loadDataUseCase.loadData()
+        }
+    }
+
+    fun clearDb() {
+        repo.clear()
     }
 
     fun update(applicationContext: Context) {
-//        scope.launch {
-//            while (true) {
-//                loadDataUseCase.loadData()
-//                Log.d("UPDATER", "Coins list updated")
-//                Thread.sleep(5000)
-//            }
-//        }
-        val uploadRequest = OneTimeWorkRequest.Builder(CoinUpdateWorker::class.java).build()
-        WorkManager.getInstance(applicationContext)
-            .enqueue(uploadRequest)
+        //workerScope.cancel()
+        val workManager = WorkManager.getInstance(applicationContext)
+        workerScope.launch {
+            while (true) {
+                workManager.enqueueUniqueWork(
+                    CoinUpdateWorker.JOB_NAME,
+                    ExistingWorkPolicy.REPLACE,
+                    CoinUpdateWorker.makeRequest(),
+                )
+                Thread.sleep(10000)
+            }
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
-        scope.cancel()
+        workerScope.cancel()
     }
 }

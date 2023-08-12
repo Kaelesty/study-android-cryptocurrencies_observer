@@ -6,5 +6,7 @@ interface ICoinsRepository {
 
 	fun getCoinList(): LiveData<List<CoinView>>
 
+	fun getCoin(name: String): LiveData<CoinView>
+
 	suspend fun loadData()
 }

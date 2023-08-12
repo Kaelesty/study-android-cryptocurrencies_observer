@@ -2,6 +2,7 @@ package com.kaelesty.cryptocurrencies_observer.data.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -21,4 +22,7 @@ interface CoinDao {
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	fun insertAll(list: List<CoinDbModel>)
+
+	@Query("DELETE FROM coins")
+	fun clear()
 }

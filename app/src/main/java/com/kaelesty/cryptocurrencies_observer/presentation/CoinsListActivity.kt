@@ -2,14 +2,15 @@ package com.kaelesty.cryptocurrencies_observer.presentation
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.ExistingWorkPolicy
-import androidx.work.WorkManager
+import com.kaelesty.cryptocurrencies_observer.R
 import com.kaelesty.cryptocurrencies_observer.databinding.ActivityCoinsListBinding
+import com.kaelesty.cryptocurrencies_observer.domain.CoinView
 
 class CoinsListActivity : AppCompatActivity() {
 
@@ -43,8 +44,8 @@ class CoinsListActivity : AppCompatActivity() {
         adapter = CoinPricesAdapter()
 
         with(adapter) {
-            onClickListener = { startActivity(CoinDetailsActivity.newIntent(this@CoinsListActivity, it)) }
-            onReachEndListener = { viewModel.increaseRepoLimit() }
+            onClickListener = { itemClicked(it) }
+            onReachEndListener = { viewModel.increaseLimit() }
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -54,10 +55,37 @@ class CoinsListActivity : AppCompatActivity() {
             coins.observe(this@CoinsListActivity) {
                 adapter.submitList(it)
             }
-            loadData()
+            subscribeToRepo()
             update(applicationContext)
         }
+    }
+
+    private fun itemClicked(coin: CoinView) {
+        if (binding.fragmentContainer == null) {
+            startActivity(CoinDetailsActivity.newIntent(this@CoinsListActivity, coin.name))
+        }
+        else {
+            val fragment = DetailsFragment.newInstance(coin.name, false)
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .commit()
+        }
+    }
 
 
+    // was used to debug. Menu got option to drop database
+    // now disabled
+    // to enable change theme parent to any that has action bar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.clear_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.itemClear) {
+            viewModel.clearDb()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
