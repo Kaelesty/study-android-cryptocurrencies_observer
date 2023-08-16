@@ -19,11 +19,10 @@ import java.time.Duration
 
 class CoinUpdateWorker(
 	context: Context,
-	private val workerParameters: WorkerParameters
+	private val workerParameters: WorkerParameters,
+	private val loadDataUseCase: LoadDataUseCase
 ): CoroutineWorker(context, workerParameters) {
 
-	private val repo = CoinsRepository.getInstance(context)
-	private val loadDataUseCase = LoadDataUseCase(repo)
 
 	override suspend fun doWork(): Result {
 
