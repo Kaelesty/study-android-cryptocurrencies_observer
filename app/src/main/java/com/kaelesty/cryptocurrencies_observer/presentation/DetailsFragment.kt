@@ -43,12 +43,11 @@ class DetailsFragment : Fragment() {
 		coinName = arguments?.getString(ARG_COIN_NAME)
 			?: throw RuntimeException("Can't get coin name")
 
-		loadImage = arguments?.getBoolean(ARG_LOAD_IMAGE)
 			?: throw RuntimeException("Can't get image flag")
 
 		getCoinUseCase.getCoin(coinName).observe(this) {
 			with(binding) {
-				if (loadImage) {
+				if (requireActivity() is CoinDetailsActivity) {
 					Glide.with(this@DetailsFragment)
 						.load(it.imageUrl)
 						.into(imageViewCoinLogo)
@@ -66,13 +65,11 @@ class DetailsFragment : Fragment() {
 	companion object {
 
 		const val ARG_COIN_NAME = "coin name"
-		const val ARG_LOAD_IMAGE = "load image"
 
-		fun newInstance(coinName: String, loadImage: Boolean) =
+		fun newInstance(coinName: String) =
 			DetailsFragment().apply {
 				arguments = Bundle().apply {
 					putString(ARG_COIN_NAME, coinName)
-					putBoolean(ARG_LOAD_IMAGE, loadImage)
 				}
 			}
 	}

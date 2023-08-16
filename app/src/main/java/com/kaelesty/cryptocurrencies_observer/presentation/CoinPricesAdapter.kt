@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.kaelesty.cryptocurrencies_observer.databinding.CoinPriceBinding
 import com.kaelesty.cryptocurrencies_observer.domain.CoinView
+import javax.inject.Inject
 
-class CoinPricesAdapter: ListAdapter<CoinView, CoinPricesAdapter.CoinViewHolder>(
+class CoinPricesAdapter @Inject constructor(): ListAdapter<CoinView, CoinPricesAdapter.CoinViewHolder>(
     object: DiffUtil.ItemCallback<CoinView>() {
         override fun areItemsTheSame(oldItem: CoinView, newItem: CoinView): Boolean {
             return oldItem.name == newItem.name
@@ -23,10 +24,6 @@ class CoinPricesAdapter: ListAdapter<CoinView, CoinPricesAdapter.CoinViewHolder>
 
     var onClickListener: ((coinItem: CoinView) -> Unit)? = null
     var onReachEndListener: (() -> Unit)? = null
-
-    init {
-        stateRestorationPolicy = StateRestorationPolicy.ALLOW
-    }
 
 
     inner class CoinViewHolder(val binding: CoinPriceBinding) :

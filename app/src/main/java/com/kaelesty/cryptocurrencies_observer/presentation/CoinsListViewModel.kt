@@ -15,6 +15,8 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.kaelesty.cryptocurrencies_observer.data.CoinsRepository
+import com.kaelesty.cryptocurrencies_observer.di.AppContextQualifier
+import com.kaelesty.cryptocurrencies_observer.di.LifecycleOwnerQualifier
 
 import com.kaelesty.cryptocurrencies_observer.domain.CoinView
 import com.kaelesty.cryptocurrencies_observer.domain.GetCoinListUseCase
@@ -26,57 +28,58 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class CoinsListViewModel(application: Application, private val owner: LifecycleOwner) : AndroidViewModel(application) {
+class CoinsListViewModel @Inject constructor(
+	@AppContextQualifier application: Application,
+	@LifecycleOwnerQualifier private val owner: LifecycleOwner
+) : AndroidViewModel(application) {
 
-    private val workerScope = CoroutineScope(Dispatchers.IO)
+	private val workerScope = CoroutineScope(Dispatchers.IO)
 
-    private val UPDATE_TIME: Long = 10000
+	private val _coins = MutableLiveData<List<CoinView>>()
+	val coins: LiveData<List<CoinView>> get() = _coins
 
-    private val _coins = MutableLiveData<List<CoinView>>()
-    val coins: LiveData<List<CoinView>> get() = _coins
+	@Inject lateinit var repo: CoinsRepository
 
-    private val repo: CoinsRepository = CoinsRepository.getInstance(application)
-    private val getCoinListUseCase: GetCoinListUseCase = GetCoinListUseCase(repo)
-    private val loadDataUseCase = LoadDataUseCase(repo)
-
-    private var limit = 0
+	@Inject lateinit var getCoinListUseCase: GetCoinListUseCase
+	@Inject lateinit var loadDataUseCase: LoadDataUseCase
 
 
-    fun subscribeToRepo() {
-        getCoinListUseCase.getCoinList().observe(owner) {
-            _coins.postValue(it)
-        }
-    }
+	fun subscribeToRepo() {
+		getCoinListUseCase.getCoinList().observe(owner) {
+			_coins.postValue(it)
+		}
+	}
 
-    fun increaseLimit() {
-        workerScope.launch {
-            repo.increaseLimit()
-            loadDataUseCase.loadData()
-        }
-    }
+	fun increaseLimit() {
+		workerScope.launch {
+			repo.increaseLimit()
+			loadDataUseCase.loadData()
+		}
+	}
 
-    fun clearDb() {
-        repo.clear()
-    }
+	fun clearDb() {
+		repo.clear()
+	}
 
-    fun update(applicationContext: Context) {
-        //workerScope.cancel()
-        val workManager = WorkManager.getInstance(applicationContext)
-        workerScope.launch {
-            while (true) {
-                workManager.enqueueUniqueWork(
-                    CoinUpdateWorker.JOB_NAME,
-                    ExistingWorkPolicy.REPLACE,
-                    CoinUpdateWorker.makeRequest(),
-                )
-                Thread.sleep(10000)
-            }
-        }
-    }
+	fun update(applicationContext: Context) {
+		//workerScope.cancel()
+		val workManager = WorkManager.getInstance(applicationContext)
+		workerScope.launch {
+			while (true) {
+				workManager.enqueueUniqueWork(
+					CoinUpdateWorker.JOB_NAME,
+					ExistingWorkPolicy.REPLACE,
+					CoinUpdateWorker.makeRequest(),
+				)
+				Thread.sleep(10000)
+			}
+		}
+	}
 
-    override fun onCleared() {
-        super.onCleared()
-        workerScope.cancel()
-    }
+	override fun onCleared() {
+		super.onCleared()
+		workerScope.cancel()
+	}
 }

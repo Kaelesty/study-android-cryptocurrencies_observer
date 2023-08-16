@@ -6,19 +6,34 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kaelesty.cryptocurrencies_observer.ContextApplication
 import com.kaelesty.cryptocurrencies_observer.R
 import com.kaelesty.cryptocurrencies_observer.databinding.ActivityCoinsListBinding
 import com.kaelesty.cryptocurrencies_observer.domain.CoinView
+import javax.inject.Inject
 
 class CoinsListActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityCoinsListBinding
-    private lateinit var viewModel: CoinsListViewModel
-    private lateinit var adapter: CoinPricesAdapter
+    @Inject lateinit var binding: ActivityCoinsListBinding
 
-    private lateinit var recyclerView: RecyclerView
+    @Inject lateinit var adapter: CoinPricesAdapter
+
+    lateinit var recyclerView: RecyclerView
+
+    @Inject lateinit var viewModelFactory: ViewModelFactory
+
+    private val viewModel: CoinsListViewModel by lazy {
+        ViewModelProvider(this, viewModelFactory)[CoinsListViewModel::class.java]
+    }
+
+    private val component by lazy {
+        (application as ContextApplication).component
+            .acitivityComponentFactory()
+            .create(this@CoinsListActivity, this, layoutInflater)
+    }
 
     companion object {
         fun newIntent(context: Context): Intent {
@@ -28,20 +43,12 @@ class CoinsListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        binding = ActivityCoinsListBinding.inflate(layoutInflater)
+        component.inject(this)
+
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        adapter = CoinPricesAdapter()
-
         recyclerView = binding.recyclerViewCoinPrices
-
-        viewModel = CoinListViewModelFactory(
-            application,
-            this@CoinsListActivity
-        ).create(CoinsListViewModel::class.java)
-
-        adapter = CoinPricesAdapter()
 
         with(adapter) {
             onClickListener = { itemClicked(it) }
@@ -65,7 +72,7 @@ class CoinsListActivity : AppCompatActivity() {
             startActivity(CoinDetailsActivity.newIntent(this@CoinsListActivity, coin.name))
         }
         else {
-            val fragment = DetailsFragment.newInstance(coin.name, false)
+            val fragment = DetailsFragment.newInstance(coin.name)
 
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)

@@ -33,7 +33,7 @@ class CoinDetailsActivity : AppCompatActivity() {
     }
 
     private fun launchFragment(coinName: String) {
-        val fragment = DetailsFragment.newInstance(coinName, true)
+        val fragment = DetailsFragment.newInstance(coinName)
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
