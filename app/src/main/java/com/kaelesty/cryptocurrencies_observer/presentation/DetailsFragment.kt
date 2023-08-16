@@ -43,14 +43,16 @@ class DetailsFragment : Fragment() {
 		coinName = arguments?.getString(ARG_COIN_NAME)
 			?: throw RuntimeException("Can't get coin name")
 
-			?: throw RuntimeException("Can't get image flag")
-
 		getCoinUseCase.getCoin(coinName).observe(this) {
 			with(binding) {
 				if (requireActivity() is CoinDetailsActivity) {
 					Glide.with(this@DetailsFragment)
 						.load(it.imageUrl)
 						.into(imageViewCoinLogo)
+					imageViewCoinLogo.visibility = View.VISIBLE
+				}
+				else {
+					imageViewCoinLogo.visibility = View.GONE
 				}
 				textViewCoinName.text = it.name
 				textViewCoinPrice.text = it.price
