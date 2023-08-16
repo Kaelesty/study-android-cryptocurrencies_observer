@@ -9,5 +9,6 @@ import dagger.Module
 interface IRepoModule {
 
 	@Binds
+	@ApplicationScope
 	fun bindIRepo(impl: CoinsRepository): ICoinsRepository
 }
