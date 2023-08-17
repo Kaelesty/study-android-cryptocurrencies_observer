@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.Data
+import androidx.work.ListenableWorker
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
@@ -16,6 +17,7 @@ import androidx.work.workDataOf
 import com.kaelesty.cryptocurrencies_observer.data.CoinsRepository
 import com.kaelesty.cryptocurrencies_observer.domain.LoadDataUseCase
 import java.time.Duration
+import javax.inject.Inject
 
 class CoinUpdateWorker(
 	context: Context,
@@ -45,6 +47,18 @@ class CoinUpdateWorker(
 			return Constraints.Builder()
 				.setRequiredNetworkType(NetworkType.UNMETERED)
 				.build()
+		}
+	}
+
+	class Factory @Inject constructor(
+		private val loadDataUseCase: LoadDataUseCase
+	): ChildWorkerFactory {
+
+		override fun create(
+			context: Context,
+			workerParameters: WorkerParameters
+		): ListenableWorker {
+			return CoinUpdateWorker(context, workerParameters, loadDataUseCase)
 		}
 	}
 }

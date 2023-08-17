@@ -10,6 +10,7 @@ import dagger.Component
 		IRepoModule::class,
 		RepoModule::class,
 		DatasourceModule::class,
+		WorkerModule::class,
 	]
 )
 @ApplicationScope
