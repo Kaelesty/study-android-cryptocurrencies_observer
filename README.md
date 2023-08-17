@@ -9,5 +9,6 @@ Cryptocurrencies Observer is a mobile app to monitor cryptocurrencies (including
 * Glide
 * GSON
 * Retrofit
+* Dagger2
 * MVVM
 * Clean Architecture
